@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingBag, SlidersHorizontal } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { mockCategories, mockProducts } from "@/lib/mock-db";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,27 +16,12 @@ export default async function CategoriesPage({
   const resolvedParams = await searchParams;
   const activeSlug = typeof resolvedParams.slug === "string" ? resolvedParams.slug : null;
 
-  // Fetch data with error handling
-  let categories: any[] = [];
-  let products: any[] = [];
-
-  try {
-    categories = await prisma.category.findMany({
-      orderBy: { name: "asc" }
-    });
-
-    products = await prisma.product.findMany({
-      where: activeSlug ? {
-        category: { slug: activeSlug }
-      } : undefined,
-      include: {
-        category: true,
-      },
-      orderBy: { createdAt: "desc" }
-    });
-  } catch (error) {
-    console.error("Database connection failed:", error);
-  }
+  // Use mock data
+  const categories = [...mockCategories].sort((a, b) => a.name.localeCompare(b.name));
+  
+  const products = activeSlug 
+    ? mockProducts.filter(p => p.category.slug === activeSlug)
+    : [...mockProducts].sort((a, b) => b.id.localeCompare(a.id));
 
   const getImageUrl = (imageJson: string) => {
     try {

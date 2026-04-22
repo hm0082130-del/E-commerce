@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Check, Minus, Plus, ShoppingBag } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { mockProducts } from "@/lib/mock-db";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -13,19 +13,7 @@ export default async function ProductDetails({
 }) {
   const { slug } = await params;
   
-  let product = null;
-  
-  try {
-    product = await prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: true,
-        variations: true,
-      },
-    });
-  } catch (error) {
-    console.error("Database connection failed:", error);
-  }
+  const product = mockProducts.find(p => p.slug === slug);
 
   if (!product) {
     notFound();

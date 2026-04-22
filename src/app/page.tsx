@@ -1,29 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShoppingBag } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { mockCategories, mockProducts } from "@/lib/mock-db";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default async function Home() {
-  let featuredProducts: any[] = [];
-  let categories: any[] = [];
-
-  try {
-    featuredProducts = await prisma.product.findMany({
-      take: 3,
-      include: {
-        category: true,
-      },
-    });
-
-    categories = await prisma.category.findMany({
-      take: 3,
-    });
-  } catch (error) {
-    console.error("Database connection failed:", error);
-  }
+  const featuredProducts = mockProducts.slice(0, 3);
+  const categories = mockCategories.slice(0, 3);
 
   // Helper to parse images from DB
   const getImageUrl = (imageJson: string) => {
