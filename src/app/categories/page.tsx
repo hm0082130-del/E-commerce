@@ -16,21 +16,27 @@ export default async function CategoriesPage({
   const resolvedParams = await searchParams;
   const activeSlug = typeof resolvedParams.slug === "string" ? resolvedParams.slug : null;
 
-  // Fetch all categories for the sidebar
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" }
-  });
+  // Fetch data with error handling
+  let categories: any[] = [];
+  let products: any[] = [];
 
-  // Fetch products based on active category slug
-  const products = await prisma.product.findMany({
-    where: activeSlug ? {
-      category: { slug: activeSlug }
-    } : undefined,
-    include: {
-      category: true,
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  try {
+    categories = await prisma.category.findMany({
+      orderBy: { name: "asc" }
+    });
+
+    products = await prisma.product.findMany({
+      where: activeSlug ? {
+        category: { slug: activeSlug }
+      } : undefined,
+      include: {
+        category: true,
+      },
+      orderBy: { createdAt: "desc" }
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error);
+  }
 
   const getImageUrl = (imageJson: string) => {
     try {

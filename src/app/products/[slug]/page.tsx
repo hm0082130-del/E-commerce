@@ -13,13 +13,19 @@ export default async function ProductDetails({
 }) {
   const { slug } = await params;
   
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      category: true,
-      variations: true,
-    },
-  });
+  let product = null;
+  
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: true,
+        variations: true,
+      },
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error);
+  }
 
   if (!product) {
     notFound();

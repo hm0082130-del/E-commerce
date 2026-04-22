@@ -7,16 +7,23 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default async function Home() {
-  const featuredProducts = await prisma.product.findMany({
-    take: 3,
-    include: {
-      category: true,
-    },
-  });
+  let featuredProducts: any[] = [];
+  let categories: any[] = [];
 
-  const categories = await prisma.category.findMany({
-    take: 3,
-  });
+  try {
+    featuredProducts = await prisma.product.findMany({
+      take: 3,
+      include: {
+        category: true,
+      },
+    });
+
+    categories = await prisma.category.findMany({
+      take: 3,
+    });
+  } catch (error) {
+    console.error("Database connection failed:", error);
+  }
 
   // Helper to parse images from DB
   const getImageUrl = (imageJson: string) => {
